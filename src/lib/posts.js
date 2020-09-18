@@ -8,17 +8,19 @@ const postsDirectory = path.join(process.cwd(), "posts");
 
 export function getSortedPostsData() {
   const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames.map((fileName) => {
-    const id = fileName.replace(/\.md$/, "");
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, "utf-8");
-    const matterResult = matter(fileContents);
+  const allPostsData = fileNames
+    .filter((f) => /\.md$/gim.test(f))
+    .map((fileName) => {
+      const id = fileName.replace(/\.md$/, "");
+      const fullPath = path.join(postsDirectory, fileName);
+      const fileContents = fs.readFileSync(fullPath, "utf-8");
+      const matterResult = matter(fileContents);
 
-    return {
-      id,
-      ...matterResult.data,
-    };
-  });
+      return {
+        id,
+        ...matterResult.data,
+      };
+    });
 
   return allPostsData.sort((a, z) => {
     return a.date < z.date ? 1 : -1;
